@@ -1,0 +1,54 @@
+.loader {
+    /* position: fixed; */
+    bottom: 50px;
+    right: 50px;
+    z-index: var(--zIndexModal);
+    
+    .loader-wrapper {
+        height: 135px;
+        display: flex;
+        -webkit-box-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        align-items: center;
+        background-color: var(--color-popoverCanvas);
+        border: 1px solid var(--color-popoverBorder);
+        border-radius: var(--borderRadius);
+        margin-top: 2rem;
+        font-family: var(--fontSansSerif);
+
+        .spin {
+            width: 1rem;
+            display: inline-block;
+            animation: 1.6s cubic-bezier(0.44, 0.15, 0.59, 0.89) 0s infinite normal both running bounce;
+            margin-right: 0.3rem;
+        }
+
+        .circle {
+            width: 1rem;
+            animation-delay: -0.84s;
+            fill: var(--color-actionBrand);
+        }
+
+        .triangle {
+            width: 1rem;
+            animation-delay: -0.42s;
+            fill: var(--color-amber);
+        }
+
+        .square {
+            width: 1rem;
+            fill: rgb(17, 106, 101);
+        }
+
+    }
+}
+
+@keyframes bounce {
+    0%, 70%, 100% {
+        transform: translateY(0px);
+    }
+    35%  {
+        transform: translateY(-20px);
+    }
+  }

@@ -1,0 +1,76 @@
+.page-header {
+    margin-bottom: var(--spacing150);
+    font-family: "Graphik Web";
+    border-bottom: 1px solid var(--color-dividerTertiary);
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    align-items: baseline;
+
+    .create-list {
+        display: flex;
+        -webkit-box-pack: end;
+        justify-content: flex-end;
+        -webkit-box-align: center;
+        align-items: center;
+        -webkit-box-flex: 1;
+        flex-grow: 1;
+    }
+}
+
+.page-header h1 {
+    display: inline-block;
+    font-family: "Graphik Web";
+    font-style: normal;
+    font-weight: 500;
+    font-size: var(--fontSize150);
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    margin-bottom: var(--spacing100);
+}
+
+/* Popover */
+.sort-actions {
+    display: block;
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+    min-width: 230px;
+}
+
+.sort-actions li {
+    display: block;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+}
+
+.sort-actions li button {
+    display: flex;
+    width: 100%;
+    padding: var(--spacing075) var(--spacing100);
+    background: none;
+    transition: background-color 0.1s ease-out 0s;
+    color: var(--color-textPrimary);
+    font-size: var(--fontSize100);
+    font-family: var(--fontSansSerif);
+    font-weight: 500;
+    text-decoration: none;
+    text-align: left;
+    line-height: 1.5rem;
+    border-radius: 0px;
+}
+
+.sort-actions li button:hover {
+    color: var(--color-actionBrandText);
+    background-color: var(--color-actionPrimary);
+}
+
+.sort-actions li button span {
+    height: 1.5rem;
+    line-height: 1rem;
+    margin-left: var(--spacing075);
+    margin-top: 1px;
+}
+
+/* Popover end */
