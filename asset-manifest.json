@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "/my-pocket/static/css/main.4ff25eff.css",
-    "main.js": "/my-pocket/static/js/main.27000a28.js",
+    "main.js": "/my-pocket/static/js/main.26654726.js",
     "static/css/333.6ccda5c2.chunk.css": "/my-pocket/static/css/333.6ccda5c2.chunk.css",
     "static/js/333.c27dba24.chunk.js": "/my-pocket/static/js/333.c27dba24.chunk.js",
     "static/js/787.8aa9887c.chunk.js": "/my-pocket/static/js/787.8aa9887c.chunk.js",
     "static/media/logo.svg": "/my-pocket/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/my-pocket/index.html",
     "main.4ff25eff.css.map": "/my-pocket/static/css/main.4ff25eff.css.map",
-    "main.27000a28.js.map": "/my-pocket/static/js/main.27000a28.js.map",
+    "main.26654726.js.map": "/my-pocket/static/js/main.26654726.js.map",
     "333.6ccda5c2.chunk.css.map": "/my-pocket/static/css/333.6ccda5c2.chunk.css.map",
     "333.c27dba24.chunk.js.map": "/my-pocket/static/js/333.c27dba24.chunk.js.map",
     "787.8aa9887c.chunk.js.map": "/my-pocket/static/js/787.8aa9887c.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4ff25eff.css",
-    "static/js/main.27000a28.js"
+    "static/js/main.26654726.js"
   ]
 }
