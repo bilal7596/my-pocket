@@ -31,8 +31,6 @@ const Articles = () => {
     const allArticles = useSelector(articles);
     const dispatch = useDispatch();
 
-    console.log("allArticles", allArticles);
-
     useEffect(() => {
         dispatch(addArticles({
             a: "a"
@@ -71,13 +69,15 @@ const Articles = () => {
                     ...prev,
                     ...data
                 }));
-                console.log("pagination called", data, position, overAllHeight);
+                // console.log("pagination called", data, position);
                 setActiveList( prev => ({
                     ...prev,
                     ...position
                 }));
+                
+                if (page === 2)
+                    doMagic();
                 apiProgress = false;
-                doMagic();
             }, 1000);
         }
     }, [page]);
@@ -88,12 +88,17 @@ const Articles = () => {
        doMagic();
     }, [scrollValue]);
 
-    const doMagic = (checkThis = false) => {
+    const doMagic = (fromPage = false) => {
+        // console.log("doMagic", hidedRecords, addedRecords, scrollDirection);
+        // if (fromPage)
+            // debugger;
         const topValue = window.scrollY - ((configuration.height * 2 ) + 100);
         setActiveList( prev => {
             const recordsKey = Object.keys(prev);
             if (recordsKey.length <= 30)
                 return prev;
+
+            console.log(scrollDirection);
             if (scrollDirection === 'down') {
                 let cloneHidedRecords = hidedRecords;
                 const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
@@ -106,22 +111,8 @@ const Articles = () => {
                         cloneHidedRecords += 1;
                     }
                 }
-                if (cloneHidedRecords > 0) {
-                    console.log('hide and add', cloneHidedRecords);
-                    for (let i=0; i<cloneHidedRecords; i++) {
-                        const lastViewableIndex = Object.values(prev).findLastIndex( a => a['hide'] === false );
-                        for (let i = lastViewableIndex + 1; i < (lastViewableIndex+1+cloneHidedRecords); i++) {
-                            if (prev[recordsKey[i]]) { 
-                                prev[recordsKey[i]] = {
-                                    ...prev[recordsKey[i]],
-                                    hide: false
-                                }
-                                cloneHidedRecords -= 1;
-                            }
-                        }
-                    }
-                    setHidedRecords( cloneHidedRecords );
-                }
+                console.log(hidedRecords);
+                setHidedRecords(cloneHidedRecords);
             } else {
                 const firstViewableIndex = Object.values(prev).findIndex( a => a['hide'] === false );
                 let newAddedRecords = false;
@@ -136,32 +127,70 @@ const Articles = () => {
                         cloneAddedRecords += 1;
                     }
                 }
-
-                if (cloneAddedRecords > 0) {
-                    console.log("add and hide");
-                    // const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
-                    for (let i=0; i<cloneAddedRecords; i++) {
-                        const lastViewItemKey = Object.keys(prev);
-                        const lastViewableIndex = Object.values(prev).findLastIndex( a => a['hide'] === false );
-                        if (lastViewableIndex > -1) {
-                            for (let i = lastViewableIndex; i>lastViewableIndex-configuration.splitup; i--) {
-                                if (prev[lastViewItemKey[i]]) { 
-                                    prev[lastViewItemKey[i]] = {
-                                        ...prev[lastViewItemKey[i]],
-                                        hide: true
-                                    }
-                                }
-                                cloneAddedRecords -= 1;
-                            }
-                        }
-                    }
-                    setAddedRecords( cloneAddedRecords );
-                }
+                setAddedRecords(cloneAddedRecords);
             }
             
             return prev;
-        })
+        });
     }
+
+    const doMagicForAdd = (hidedRec) => {
+        let cloneHidedRecords = hidedRec || hidedRecords;
+        if (cloneHidedRecords > 0) {
+            const prev = activeList;
+            const recordsKey = Object.keys(activeList);
+            console.log('hide and add', cloneHidedRecords);
+            for (let i=0; i<cloneHidedRecords; i++) {
+                const lastViewableIndex = Object.values(prev).findLastIndex( a => a['hide'] === false );
+                for (let i = lastViewableIndex + 1; i < (lastViewableIndex+1+cloneHidedRecords); i++) {
+                    if (prev[recordsKey[i]]) { 
+                        prev[recordsKey[i]] = {
+                            ...prev[recordsKey[i]],
+                            hide: false
+                        }
+                        cloneHidedRecords -= 1;
+                    }
+                }
+            }
+            setActiveList(prev);
+            setHidedRecords(cloneHidedRecords);
+        }
+    }
+
+    const doMagicForDelete = (addedRec) => {
+        let cloneAddedRecords = addedRec || addedRecords;
+        if (cloneAddedRecords > 0) {
+            const prev = activeList;
+            const recordsKey = Object.keys(activeList);
+            console.log("add and hide");
+            // const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
+            for (let i=0; i<cloneAddedRecords; i++) {
+                const lastViewItemKey = Object.keys(prev);
+                const lastViewableIndex = Object.values(prev).findLastIndex( a => a['hide'] === false );
+                if (lastViewableIndex > -1) {
+                    for (let i = lastViewableIndex; i>lastViewableIndex-configuration.splitup; i--) {
+                        if (prev[lastViewItemKey[i]]) { 
+                            prev[lastViewItemKey[i]] = {
+                                ...prev[lastViewItemKey[i]],
+                                hide: true
+                            }
+                        }
+                        cloneAddedRecords -= 1;
+                    }
+                }
+            }
+            setActiveList(prev);
+            setAddedRecords( cloneAddedRecords );
+        }
+    }
+
+    useEffect(() => {
+        doMagicForDelete();
+    }, [activeList, addedRecords]);
+
+    useEffect(() => {
+        doMagicForAdd();
+    }, [activeList, hidedRecords]);
 
     const calculation = () => {
         let splitup = 1;
@@ -173,7 +202,6 @@ const Articles = () => {
                 splitup = 3;
                 width = parseInt((totalWidth - 50) / splitup);
                 height = 300;
-                console.log("totalWidth", totalWidth);
                 if (width < 200) {
                     splitup = 2;
                     width = parseInt((totalWidth - 50) / splitup);
@@ -245,7 +273,8 @@ const Articles = () => {
         };
         const position = {};
         let overAllHeight = 0;
-        const ids = Object.keys(allOverData)
+        const ids = Object.keys(allOverData);
+        console.log("start", pageNumber, ((pageNumber-1)*initCount), pageNumber*initCount);
         for (let i=((pageNumber-1)*initCount); i<(pageNumber*initCount); i++) {
             const row = parseInt(i / splitup); // starts from 0
             const column = i % splitup; // position from 0;
@@ -282,9 +311,10 @@ const Articles = () => {
         : Object.keys(activeList).map( (id, key) => {
             if (activeList[id].hide)
                 return <></>;
-            domHeight = activeList[id].style.top + configuration.height + 50;
 
-            console.log(id, Object.keys(activeList));
+            if (lists[id] === undefined)
+                debugger;
+            domHeight = activeList[id].style.top + configuration.height + 50;
 
             return <article className={`article ${viewType.toLowerCase()}`} key={key} id={id} style={activeList[id].style}>
                 <span className="media-block">
