@@ -8,6 +8,8 @@ import { getScrollPercent, toObject } from "../../Utilities/Utility";
 import { useScrollDirection } from "../../Hooks/useScrollDirection";
 import { getArticlesApi } from "../../Backend/articles";
 import Loader from "../Loader";
+import { useDispatch, useSelector } from "react-redux";
+import { addArticles, articles } from "./articleSlice";
 
 const initCount = 30;
 let apiProgress = false;
@@ -25,6 +27,17 @@ const Articles = () => {
     const [configuration, setConfiguration] = useState({});
     const [hidedRecords, setHidedRecords] = useState(0);
     const [addedRecords, setAddedRecords] = useState(0);
+
+    const allArticles = useSelector(articles);
+    const dispatch = useDispatch();
+
+    console.log("allArticles", allArticles);
+
+    useEffect(() => {
+        dispatch(addArticles({
+            a: "a"
+        }))
+    }, []);
 
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);

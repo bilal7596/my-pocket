@@ -17,7 +17,7 @@ const Header = () => {
     const [actionType, setActionType] = useState(null)
     
     return <header className='header'>
-        <div className='global-nav-container'>
+        <div className='global-nav-container responsive-container'>
             <nav>
                 <Logo />
                 { !actionType  && <Fragment>

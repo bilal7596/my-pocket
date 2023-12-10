@@ -130,9 +130,27 @@ button[data-tooltip]:hover::after {
         margin: 0px auto;
         max-width: 1128px;
         padding: var(--spacing250);
+        /* padding-top: 0px; */
+        /* padding-bottom: 0px; */
+        /* height: var(--size400); */
+    }
+
+    .global-nav-container.responsive-container {
         padding-top: 0px;
         padding-bottom: 0px;
         height: var(--size400);
+    }
+
+    @media (max-width: 719px) {
+        .global-nav-container {
+            padding: var(--spacing250) var(--spacing150);
+        }
+    }
+
+    @media (max-width: 599px) {
+        .global-nav-container {
+            padding: var(--spacing150) var(--spacing100);
+        }
     }
 
 }

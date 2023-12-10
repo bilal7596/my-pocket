@@ -18,10 +18,10 @@ const Account = () => {
     const onThemeChange = e => setTheme(e.target.value);
 
     return  <div className='accounts'>
-        <a className='upgrade-link'>
+        {/* <a className='upgrade-link'> */}
             <ButtonWithSvg svgName={premium} />
-            <span>Upgrade</span>
-        </a>
+            {/* <span>Upgrade</span> */}
+        {/* </a> */}
         <div className="profile">
         <Popover>
             <PopoverTrigger className="icon">

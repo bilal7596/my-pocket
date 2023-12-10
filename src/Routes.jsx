@@ -1,13 +1,14 @@
 import React from "react"
-import { BrowserRouter, Link, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
+import CustomLink from "./Common/CustomLink";
 
 const SaveComponent = React.lazy(() => import("./Pages/SavePage"));
 
 const NoMatch = () => <div>
     <h2>It looks like you're lost...</h2>
     <p>
-        <Link to="/">Go to the home page</Link>
+        <CustomLink to="/">Go to the home page</CustomLink>
     </p>
 </div>
 
