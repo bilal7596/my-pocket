@@ -323,7 +323,7 @@ const Articles = () => {
                 <div className="item-links">
                     <a className="content-block" href="">
                         <div>
-                            <h2 className="title">{lists[id].title}</h2>
+                            <h2 className="title">{lists[id].seq} {lists[id].title}</h2>
                         </div>
                         <div className="excerpt">
                             <p>{lists[id].excerpt}</p>

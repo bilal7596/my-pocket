@@ -37,8 +37,10 @@ export const getArticlesApi = (count, page) => {
     const data = [];
     for (let i=0; i<count; i++) {
         const seq = page === 0 ? (i + 1) : (i + (count * (page -1)))
+        const selectedArticle = articleData[Math.floor(Math.random() * articleData.length)];
         data.push({
-            ...articleData[Math.floor(Math.random() * articleData.length)],
+            ...selectedArticle,
+            title: `${seq} ${selectedArticle.title}`,
             id: `${seq}-${Math.random()*100000000000000000}`
         });
     }
