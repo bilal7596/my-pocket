@@ -12,11 +12,10 @@ const NoMatch = () => <div>
     </p>
 </div>
 
-const getBasePath = () => window.location.host.includes("github.io") ? "/my-pocket/" : "/";
 
 const Router = () => <BrowserRouter>
     <Routes>
-        <Route path={getBasePath()} element={ <Layout /> }  >
+        <Route path={"/"} element={ <Layout /> }  >
             <Route index element={ <Navigate to="/saves" /> } />
             <Route path="saves" >
                 <Route index element={ <SaveComponent /> } />
