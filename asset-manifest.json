@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/my-pocket/static/css/main.10ad071b.css",
+    "main.js": "/my-pocket/static/js/main.89e55fc4.js",
+    "static/css/333.6ccda5c2.chunk.css": "/my-pocket/static/css/333.6ccda5c2.chunk.css",
+    "static/js/333.521cc20d.chunk.js": "/my-pocket/static/js/333.521cc20d.chunk.js",
+    "static/js/787.8aa9887c.chunk.js": "/my-pocket/static/js/787.8aa9887c.chunk.js",
+    "static/media/logo.svg": "/my-pocket/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/my-pocket/index.html",
+    "main.10ad071b.css.map": "/my-pocket/static/css/main.10ad071b.css.map",
+    "main.89e55fc4.js.map": "/my-pocket/static/js/main.89e55fc4.js.map",
+    "333.6ccda5c2.chunk.css.map": "/my-pocket/static/css/333.6ccda5c2.chunk.css.map",
+    "333.521cc20d.chunk.js.map": "/my-pocket/static/js/333.521cc20d.chunk.js.map",
+    "787.8aa9887c.chunk.js.map": "/my-pocket/static/js/787.8aa9887c.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.10ad071b.css",
+    "static/js/main.89e55fc4.js"
+  ]
+}
