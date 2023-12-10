@@ -15,7 +15,7 @@ Sentry.init({
   integrations: [
     new Sentry.BrowserTracing({
       // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
-      tracePropagationTargets: ["localhost", /^https:\/\/yourserver\.io\/api/],
+      tracePropagationTargets: ["localhost", "https://my-pocket-bilal-basha-ms-projects.vercel.app"],
     }),
     new Sentry.Replay(),
   ],
