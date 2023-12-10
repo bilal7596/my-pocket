@@ -286,7 +286,7 @@ const Articles = () => {
                     <div className="media">
                         <a href="" className="media-link">
                             <img className="image" 
-                            src={`http://localhost:8080/api/image?imageUrl=${encodeURIComponent(lists[id].topImageUrl)}&width=640&height=360`}
+                            src={`https://scrapper-wfeh.onrender.com/api/image?imageUrl=${encodeURIComponent(lists[id].topImageUrl)}&width=640&height=360`}
                             // src="https://pocket-image-cache.com/640x360/filters:format(jpg):extract_focal()/https%3A%2F%2Fhbr.org%2Fresources%2Fimages%2Farticle_assets%2F2019%2F04%2Fwide-exponential-view.png" 
                             />
                             <span className="view-original">
