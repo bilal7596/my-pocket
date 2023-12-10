@@ -82,7 +82,8 @@ const Articles = () => {
         }
     }, [page]);
 
-    // console.log(activeList);
+    console.log("activeList", activeList);
+    console.log("lists", lists);
 
     useEffect(() => {
        doMagic();
@@ -98,7 +99,7 @@ const Articles = () => {
             if (recordsKey.length <= 30)
                 return prev;
 
-            console.log(scrollDirection);
+            // console.log(scrollDirection);
             if (scrollDirection === 'down') {
                 let cloneHidedRecords = hidedRecords;
                 const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
@@ -111,7 +112,7 @@ const Articles = () => {
                         cloneHidedRecords += 1;
                     }
                 }
-                console.log(hidedRecords);
+                // console.log(hidedRecords);
                 setHidedRecords(cloneHidedRecords);
             } else {
                 const firstViewableIndex = Object.values(prev).findIndex( a => a['hide'] === false );
