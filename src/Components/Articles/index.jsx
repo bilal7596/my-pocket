@@ -63,15 +63,15 @@ const Articles = () => {
     }, []);
 
     useEffect(() => {
-        if (page <= 4) {
+        if (page <= 10) {
             apiProgress = true;
-            console.log("pagination called");
             setTimeout(() => {
                 const { data, position, overAllHeight } = buildArticle(page);
                 setLists(prev => ({
                     ...prev,
                     ...data
                 }));
+                console.log("pagination called", data, position, overAllHeight);
                 setActiveList( prev => ({
                     ...prev,
                     ...position
@@ -265,6 +265,8 @@ const Articles = () => {
             }
             overAllHeight = position[ids[i]].style.top + 300;
         }
+        if (position === undefined)
+            debugger;
         return {
             data,
             position,
@@ -273,6 +275,7 @@ const Articles = () => {
     }
 
     let domHeight = 0;
+    
 
     return <div className="article-collections" ref={elementRef} >
         { Object.keys(activeList).length === 0 ? <div>Loading....</div>
@@ -280,6 +283,8 @@ const Articles = () => {
             if (activeList[id].hide)
                 return <></>;
             domHeight = activeList[id].style.top + configuration.height + 50;
+
+            console.log(id, Object.keys(activeList));
 
             return <article className={`article ${viewType.toLowerCase()}`} key={key} id={id} style={activeList[id].style}>
                 <span className="media-block">

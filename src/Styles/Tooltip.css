@@ -7,7 +7,7 @@
     box-sizing: border-box;
     width: max-content;
     max-width: calc(100vw - 10px);
-    z-index: 999;
+    z-index: 99;
 }
 
 .tooltip + svg {

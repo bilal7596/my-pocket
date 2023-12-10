@@ -160,16 +160,18 @@ export const TooltipContent = React.forwardRef(function TooltipContent({ style, 
 
   if (!context.open) return null;
 
+  const floatingProps = {...context.getFloatingProps(props)};
+
   return (
     <FloatingPortal>
       <div
-        className={"tooltip".concat(props.className || "")}
         ref={ref}
         style={{
           ...context.floatingStyles,
           ...style
         }}
-        {...context.getFloatingProps(props)}
+        {...floatingProps}
+        className={"tooltip".concat(` ${floatingProps.className}` || "")}
       >
         <FloatingArrow ref={context.arrowRef} context={context} />
         { children}

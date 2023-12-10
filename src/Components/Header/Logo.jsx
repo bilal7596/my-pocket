@@ -56,7 +56,6 @@ const Logo = () => {
 
     return <div className='site-nav'>
         <Dialog>
-
             <Tooltip>
                 <TooltipTrigger>
                     <DialogTrigger>
@@ -66,7 +65,17 @@ const Logo = () => {
                 <TooltipContent>Open</TooltipContent>
             </Tooltip>
 
-            <DialogContent className="side-menu">
+            <DialogContent transitionStyles={{
+                initial: {
+                    width: "0%",
+                },
+                open: {
+                    width: "256px",
+                },
+                close: {
+                    width: "0%",
+                },
+            }} overLayClassName="dialog-overlay-dark side-menu-overlay" className="side-menu">
                 <div className="modal-back">
                     <Tooltip>
                         <TooltipTrigger>
@@ -74,7 +83,7 @@ const Logo = () => {
                             <ButtonWithSvg svgName={back} />
                         </DialogClose>
                         </TooltipTrigger>
-                        <TooltipContent>Close</TooltipContent>
+                        <TooltipContent className="close">Close</TooltipContent>
                     </Tooltip>
                 </div>
                 <ul className="menu-list">

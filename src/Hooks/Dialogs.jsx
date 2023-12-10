@@ -12,6 +12,7 @@ import {
 	useId,
 	useTransitionStyles,
 } from "@floating-ui/react";
+import "../Styles/Dialog.css"
 
 // interface DialogOptions {
 // 	initialOpen?: boolean;
@@ -128,33 +129,24 @@ export const DialogTrigger = React.forwardRef(function DialogTrigger({ children,
 	);
 });
 
-export const DialogContent = React.forwardRef(function DialogContent(props, propRef) {
+export const DialogContent = React.forwardRef(({ transitionStyles, overLayClassName, ...props}, propRef) => {
   const { context: floatingContext, ...context } = useDialogContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
-  const { isMounted, styles } = useTransitionStyles(floatingContext, {
-    initial: {
-      width: "0%",
-    },
-    open: {
-      width: "100%",
-    },
-    close: {
-      width: "0%",
-    },
-  });
+  const { isMounted, styles } = useTransitionStyles(floatingContext, transitionStyles || {});
 
 //   if (!floatingContext.open) return null;
 
   return (
     <FloatingPortal>
-      { isMounted && <FloatingOverlay className="Dialog-overlay" style={styles} lockScroll>
+      { isMounted && <FloatingOverlay className={`${overLayClassName || ''}`} lockScroll>
         <FloatingFocusManager context={floatingContext}>
           <div
             ref={ref}
             aria-labelledby={context.labelId}
             aria-describedby={context.descriptionId}
             {...context.getFloatingProps(props)}
+			style={styles}
           >
             {props.children}
           </div>
