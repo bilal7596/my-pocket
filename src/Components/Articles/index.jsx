@@ -267,24 +267,14 @@ const Articles = () => {
     const buildArticle = (pageNumber) => {
         
         const { splitup, height, width } = calculation();
-        const data = toObject(getArticlesApi(initCount, page), 'id');
-        const allOverData = {
-            ...lists,
-            ...data,
-        };
+        const data = getArticlesApi(initCount, page);
         const position = {};
         let overAllHeight = 0;
-        const ids = Object.keys(allOverData);
-        console.log("start", pageNumber, ((pageNumber-1)*initCount), pageNumber*initCount);
-        for (let i=((pageNumber-1)*initCount); i<(pageNumber*initCount); i++) {
-            const row = parseInt(i / splitup); // starts from 0
-            const column = i % splitup; // position from 0;
-            // const id = `${pageNumber}-${i+1}`;
-            // data[id] = {
-            //     id,
-            //     content: `Article ${i+1} ${row} x ${column}`
-            // }
-            position[ids[i]] = {
+        for (let i=0; i<data.length; i++) {
+            const seq = pageNumber === 0 ? (i + 1) : (i + (initCount * (pageNumber -1)));
+            const row = parseInt(seq / splitup); // starts from 0
+            const column = seq % splitup; // position from 0;
+            position[data[i].id] = {
                 style: {
                     top: (height * row) + (25 * row),
                     left: (width * column) + (25 * (column)),
@@ -293,12 +283,10 @@ const Articles = () => {
                 },
                 hide: pageNumber === 1 ? false : true
             }
-            overAllHeight = position[ids[i]].style.top + 300;
+            overAllHeight = position[data[i].id].style.top + 300;
         }
-        if (position === undefined)
-            debugger;
         return {
-            data,
+            data: toObject(data, 'id'),
             position,
             overAllHeight
         }

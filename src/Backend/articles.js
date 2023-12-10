@@ -35,10 +35,11 @@ export const articleData = [
 
 export const getArticlesApi = (count, page) => {
     const data = [];
-    for (let i=((page-1)*(count)); i<(((page-1)*(count))+count); i++) {
+    for (let i=0; i<count; i++) {
+        const seq = page === 0 ? (i + 1) : (i + (count * (page -1)))
         data.push({
             ...articleData[Math.floor(Math.random() * articleData.length)],
-            id: `${i+1}-${Math.random()*100000000000000000}`
+            id: `${seq}-${Math.random()*100000000000000000}`
         });
     }
     return data;
