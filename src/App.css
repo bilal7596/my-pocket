@@ -1508,3 +1508,11 @@ a.button+a.button,a.button+input[type=button],a.button+input[type=reset],a.butto
 .color-white {
   color: var(--color-white100);
 }
+
+.top-0 {
+  top: 0;
+}
+
+.bottom-0 {
+  bottom: 0px;
+}

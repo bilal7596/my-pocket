@@ -1,8 +1,9 @@
 .loader {
     /* position: fixed; */
-    bottom: 50px;
-    right: 50px;
     z-index: var(--zIndexModal);
+    position: absolute;
+    left: 0;
+    right: 0;
     
     .loader-wrapper {
         height: 135px;
@@ -51,4 +52,4 @@
     35%  {
         transform: translateY(-20px);
     }
-  }
+}

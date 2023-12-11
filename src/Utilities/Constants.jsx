@@ -79,6 +79,21 @@ export const listViewType = 'LIST';
 export const detailViewType = 'DETAIL';
 export const gridViewType = 'GRID';
 
+export const viewTypes = [
+    {
+        icon: listViewType,
+        text: "Display items as a list"
+    },
+    {
+        icon: detailViewType,
+        text: "Display items in detail"
+    },
+    {
+        icon: gridViewType,
+        text: "Display items as a grid"
+    }
+]
+
 export const footerActions = [
     {
         icon: createList,

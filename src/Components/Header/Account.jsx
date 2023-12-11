@@ -3,8 +3,11 @@ import ButtonWithImg from "../../Common/ButtonWithImg"
 import ButtonWithSvg from "../../Common/ButtonWithSvg"
 import { Popover, PopoverContent, PopoverHeading, PopoverDescription, PopoverClose, PopoverTrigger } from "../../Hooks/Popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../Hooks/Tooltip";
-import { cancel, detailViewType, gridViewType, listViewType, premium } from "../../Utilities/Constants";
+import { cancel, detailViewType, gridViewType, listViewType, premium, viewTypes } from "../../Utilities/Constants";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTrigger } from "../../Hooks/Dialogs";
+import { useDispatch, useSelector } from "react-redux";
+import { setViewTypeReducer, viewTypeSelector } from "../Articles/articleSlice";
+import { getSelectedClass } from "../../Utilities/Utility";
 
 const themes = [
     { type: 'light', text: 'Light' },
@@ -14,6 +17,8 @@ const themes = [
 
 const Account = () => {
 
+    const dispatch = useDispatch();
+
     const [theme, setTheme] = useState('light');
     const [width, setWidth] = useState(window.innerWidth);
 
@@ -21,10 +26,16 @@ const Account = () => {
 
     const handleResize = () => setWidth(window.innerWidth);
 
+    const viewType = useSelector(viewTypeSelector);
+
     useEffect(() => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    const selectedClass = (type) => getSelectedClass(type, viewType);
+
+    const onChangeViewType = type => dispatch(setViewTypeReducer(type))
 
     const accountPopupHtml = () => <ul className="account-parent">
         <li className="account-parent-child">
@@ -52,24 +63,12 @@ const Account = () => {
         </li>
         <li className="account-parent-child">
             <div className="flex-space-evenly">
-                <div className="list-type-split">
+                { viewTypes.map( ({ icon, text }) => <div className="list-type-split">
                     <Tooltip>
-                        <TooltipTrigger><ButtonWithSvg svgName={listViewType} /></TooltipTrigger>
-                        <TooltipContent>Display items as a list</TooltipContent>
+                        <TooltipTrigger><ButtonWithSvg svgName={icon} buttonClassName={`svg-button icon${selectedClass(icon)}`} onClick={ () => onChangeViewType(icon)} /></TooltipTrigger>
+                        <TooltipContent>{ text }</TooltipContent>
                     </Tooltip>
-                </div>
-                <div className="list-type-split">
-                    <Tooltip>
-                        <TooltipTrigger><ButtonWithSvg svgName={detailViewType} /></TooltipTrigger>
-                        <TooltipContent>Display items in detail</TooltipContent>
-                    </Tooltip>
-                </div>
-                <div className="list-type-split">
-                    <Tooltip>
-                        <TooltipTrigger><ButtonWithSvg svgName={gridViewType} /></TooltipTrigger>
-                        <TooltipContent>Display items as a grid</TooltipContent>
-                    </Tooltip>
-                </div>
+                </div> ) }
             </div>
         </li>
     </ul>

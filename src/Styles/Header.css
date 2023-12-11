@@ -549,6 +549,11 @@ button[data-tooltip]:hover::after {
     align-items: center;
     font-size: 1.5rem;
     padding: var(--size050);
+
+    .selected {
+        border: 2px solid var(--color-formFieldFocusLabel);
+        color: var(--color-formFieldFocusLabel);
+    }
 }
 
 .theme-selection {

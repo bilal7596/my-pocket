@@ -1,7 +1,7 @@
 import "../../Styles/Loader.css";
 
-const Loader = () => {
-    return <div className="loader">
+const Loader = ({ className }) => {
+    return <div className={`loader ${className}`}>
         <div className="loader-wrapper">
             <div className="spin circle">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3"></circle></svg>

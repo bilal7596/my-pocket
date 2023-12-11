@@ -1,90 +1,76 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import "../../Styles/Articles.css";
 import { detailViewType, footerActions, gridViewType, listViewType, open, overflow } from "../../Utilities/Constants";
 import ButtonWithSvg from "../../Common/ButtonWithSvg";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../../Hooks/Tooltip";
 import { Popover, PopoverContent, PopoverDescription, PopoverTrigger } from "../../Hooks/Popover";
-import { getScrollPercent, toObject } from "../../Utilities/Utility";
+import { getScrollPercent } from "../../Utilities/Utility";
 import { useScrollDirection } from "../../Hooks/useScrollDirection";
-import { getArticlesApi } from "../../Backend/articles";
 import Loader from "../Loader";
 import { useDispatch, useSelector } from "react-redux";
-import { addArticles, articles } from "./articleSlice";
+import { getArticlesApiThunk, listsSelector, loaderSelector, pageSelector, setPageReducer, sizeSelector, viewTypeSelector } from "./articleSlice";
 
-const initCount = 30;
 const maxPage = 5;
-let apiProgress = false;
-
 let hidedRecords = 0;
 let addedRecords = 0;
 
 let activeList = {};
 
+let defaultHeight = 0;
+
 const Articles = () => {
+
+    const lists = useSelector(listsSelector);
+    const page = useSelector(pageSelector);
+    const apiProgress = useSelector(loaderSelector);
+    const size = useSelector(sizeSelector);
+    const viewType = useSelector(viewTypeSelector);
 
     const elementRef = useRef(null);
     const scrollDirection = useScrollDirection(elementRef);
 
-    const [page, setPage] = useState(1);
-    const [viewType, setViewType] = useState(gridViewType);
-    const [lists, setLists] = useState({});
     const [scrollValue, setScrollValue] = useState(window.scrollY);
     const [configuration, setConfiguration] = useState({});
 
-    const allArticles = useSelector(articles);
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(addArticles({
-            a: "a"
-        }))
-    }, []);
+        const headerEl = document.querySelectorAll('header');
+        const headerCompStyle1 = getComputedStyle(headerEl[0]);
+        let headerHeight1 = headerEl[0].clientHeight;  // height with padding
+        headerHeight1 -= parseFloat(headerCompStyle1.paddingTop) + parseFloat(headerCompStyle1.paddingBottom);
 
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        window.addEventListener('resize', handleResize);
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    useEffect(() => {
-
-        const headerEl = document.querySelector('header');
-        const headerCompStyle = getComputedStyle(headerEl);
-        let headerHeight = headerEl.clientHeight;  // height with padding
-        headerHeight -= parseFloat(headerCompStyle.paddingTop) + parseFloat(headerCompStyle.paddingBottom);
+        const headerCompStyle2 = getComputedStyle(headerEl[1]);
+        let headerHeight2 = headerEl[1].clientHeight;  // height with padding
+        headerHeight2 -= parseFloat(headerCompStyle2.paddingTop) + parseFloat(headerCompStyle2.paddingBottom);
 
         const footerEl = document.querySelector('.layout');
         const footerCompStyle = getComputedStyle(footerEl);
         let footerHeight = footerEl.clientHeight;  // height with padding
         footerHeight -= parseFloat(footerCompStyle.paddingTop) + parseFloat(footerCompStyle.paddingBottom);
 
+        defaultHeight = window.innerHeight - headerHeight1 - headerHeight2 - 120;
+
     }, []);
 
     useEffect(() => {
         if (page <= maxPage) {
-            apiProgress = true;
-            setTimeout(() => {
-                const data = getArticlesApi(initCount, page);
-                buildArticle(data, page);
-                if (window.innerWidth < 599 && ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight)) {
-                    const lastTop = document.querySelectorAll('article')[document.querySelectorAll('article').length - 1].style.top;
-                    window.scrollTo(0, parseInt(lastTop));
-                }
-                setLists(prev => ({
-                    ...prev,
-                    ...toObject(data, 'id')
-                }));
-                doMagic();
-                doMagicForAdd();
-                doMagicForDelete();
-
-                apiProgress = false;
-            }, 1000);
+            dispatch(getArticlesApiThunk({ size, page }));
         }
     }, [page]);
+
+    useEffect(() => {
+        if (window.innerWidth < 599 && ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight)) {
+            const lastTop = document.querySelectorAll('article')[document.querySelectorAll('article').length - 1].style.top;
+            window.scrollTo(0, parseInt(lastTop));
+        }
+        const allLists = Object.values(lists);
+        const lastAdded = allLists.slice(allLists.length - size);
+        buildArticle(lastAdded, page);
+        doMagic();
+        doMagicForAdd();
+        doMagicForDelete();
+    }, [lists]);
 
 
     useEffect(() => {
@@ -211,7 +197,7 @@ const Articles = () => {
                 height = 174;
                 break;
             case listViewType:
-                height = 72;
+                height = window.innerWidth < 479 ? 130 : 72;
                 break;
             default:
                 break;
@@ -228,21 +214,22 @@ const Articles = () => {
         };
     }
 
-    const handleScroll = event => {
+    const handleScroll = useCallback(event => {
         const scrollPercent = getScrollPercent();
         if (scrollPercent > 60 && apiProgress === false) {
             const records = Object.values(activeList);
             const viewingLastArticleIndex = records.findLastIndex( a => a.hide === false);
-            setPage( prev => (prev < maxPage && activeList[records[viewingLastArticleIndex].id].page === prev) ? prev + 1 : prev);
+            if (viewingLastArticleIndex > -1 && page < maxPage && activeList[records[viewingLastArticleIndex].id].page === page)
+                dispatch(setPageReducer(page+1));
         }
         setScrollValue(window.scrollY);
-    };
+    }, [page]);
 
     const handleResize = () => {
         const prev = activeList;
         const data = Object.values(prev);
-        for (let page=1; page<=Math.floor(data.length / initCount); page++)
-            buildArticle(data.slice(initCount*(page-1), initCount*page), page, true);
+        for (let page=1; page<=Math.floor(data.length / size); page++)
+            buildArticle(data.slice(size*(page-1), size*page), page, true);
     }
 
     const buildArticle = (data, pageNumber, fromResize) => {
@@ -250,7 +237,7 @@ const Articles = () => {
         const position = {};
         let overAllHeight = 0;
         for (let i=0; i<data.length; i++) {
-            const seq = pageNumber === 0 ? (i + 1) : (i + (initCount * (pageNumber -1)));
+            const seq = pageNumber === 0 ? (i + 1) : (i + (size * (pageNumber -1)));
             const row = parseInt(seq / splitup); // starts from 0
             const column = seq % splitup; // position from 0;
             position[data[i].id] = {
@@ -287,14 +274,28 @@ const Articles = () => {
         }
     }
 
+    useEffect(() => {
+        handleResize();
+    }, [viewType]);
+
+    console.log(apiProgress);
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [handleScroll, handleResize]);
+
     let domHeight = 0;
 
     return <div className="article-collections" ref={elementRef} >
-        { Object.keys(activeList).length === 0 ? <div>Loading....</div>
-        : Object.keys(activeList).map( (id, key) => {
+        { Object.keys(activeList).map( (id, key) => {
             if (activeList[id].hide)
                 return <></>;
-            domHeight = activeList[id].style.top + configuration.height + 50;
+            domHeight = activeList[id].style.top + configuration.height + 150;
 
             return <article className={`article ${viewType.toLowerCase()}`} key={key} id={id} style={activeList[id].style}>
                 <span className="media-block">
@@ -352,8 +353,8 @@ const Articles = () => {
             </article>
         }) }
         {/* { domHeight > 0 && <div style={{ height: `${domHeight}px`, width:'1px', visibility: 'hidden'}}></div> } */}
-        <div style={{ height: `${domHeight || window.innerHeight}px`, width: '1px', visibility: 'hidden' }}></div>
-        { page != maxPage ? <Loader /> : null }
+        <div style={{ height: `${domHeight || defaultHeight}px`, width: '1px', visibility: 'hidden' }}></div>
+        { apiProgress  ? <Loader className={Object.keys(activeList).length === 0 ? 'top-0' : 'bottom-0'} /> : null }
     </div>
 }
 

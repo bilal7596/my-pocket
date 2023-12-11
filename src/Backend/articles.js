@@ -33,10 +33,10 @@ export const articleData = [
     }
 ];
 
-export const getArticlesApi = (count, page) => {
+export const getArticlesApi = (size, page) => {
     const data = [];
-    for (let i=0; i<count; i++) {
-        const seq = page === 0 ? (i + 1) : (i + (count * (page -1)))
+    for (let i=0; i<size; i++) {
+        const seq = page === 0 ? (i + 1) : (i + (size * (page -1)))
         const selectedArticle = articleData[Math.floor(Math.random() * articleData.length)];
         data.push({
             ...selectedArticle,
