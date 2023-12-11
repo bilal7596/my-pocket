@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addArticles, articles } from "./articleSlice";
 
 const initCount = 30;
+const maxPage = 10;
 let apiProgress = false;
 
 const Articles = () => {
@@ -61,7 +62,7 @@ const Articles = () => {
     }, []);
 
     useEffect(() => {
-        if (page <= 10) {
+        if (page <= maxPage) {
             apiProgress = true;
             setTimeout(() => {
                 const { data, position, overAllHeight } = buildArticle(page);
@@ -79,8 +80,8 @@ const Articles = () => {
                     ...position
                 }));
 
-                if (page === 2)
-                    doMagic();
+                // if (page === 2)
+                    // doMagic();
                 apiProgress = false;
             }, 1000);
         }
@@ -90,7 +91,7 @@ const Articles = () => {
     console.log("lists", lists);
 
     useEffect(() => {
-       doMagic();
+    //    doMagic();
     }, [scrollValue]);
 
     const doMagic = (fromPage = false) => {
@@ -190,11 +191,11 @@ const Articles = () => {
     }
 
     useEffect(() => {
-        doMagicForDelete();
+        // doMagicForDelete();
     }, [activeList, addedRecords]);
 
     useEffect(() => {
-        doMagicForAdd();
+        // doMagicForAdd();
     }, [activeList, hidedRecords]);
 
     const calculation = () => {
@@ -241,7 +242,7 @@ const Articles = () => {
         const scrollPercent = getScrollPercent();
         // if (page === 1)
         //     setPage(2);
-        if (scrollPercent > 60 && apiProgress === false) {
+        if (scrollPercent > 60 && apiProgress === false && page < maxPage) {
            setPage( prev => prev + 1);
         }
         setScrollValue(window.scrollY);
@@ -287,7 +288,7 @@ const Articles = () => {
                     width : splitup === 1 ? "100%" : width,
                     height: `${height}px`
                 },
-                hide: pageNumber === 1 ? false : true
+                hide: false
             }
             overAllHeight = position[data[i].id].style.top + 300;
         }
@@ -365,7 +366,7 @@ const Articles = () => {
         }) }
         {/* { domHeight > 0 && <div style={{ height: `${domHeight}px`, width:'1px', visibility: 'hidden'}}></div> } */}
         <div style={{ height: `${domHeight || window.innerHeight}px`, width: '1px', visibility: 'hidden' }}></div>
-        <Loader />
+        { page != maxPage ? <Loader /> : null }
     </div>
 }
 
