@@ -349,6 +349,7 @@ const Articles = () => {
                         <Popover>
                             <PopoverTrigger>
                                 <ButtonWithSvg buttonClassName={'light-icon'} svgName={overflow} />
+                                {elementRef?.current?.offsetWidth} { JSON.stringify(configuration) }
                             </PopoverTrigger>
                             <PopoverContent>
                             <PopoverDescription>
