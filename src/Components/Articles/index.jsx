@@ -65,16 +65,20 @@ const Articles = () => {
             apiProgress = true;
             setTimeout(() => {
                 const { data, position, overAllHeight } = buildArticle(page);
+                if (window.innerWidth < 599 && ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight)) {
+                    const lastTop = document.querySelectorAll('article')[document.querySelectorAll('article').length - 1].style.top;
+                    window.scrollTo(0, parseInt(lastTop));
+                }
                 setLists(prev => ({
                     ...prev,
                     ...data
                 }));
-                // console.log("pagination called", data, position);
+                console.log("pagination called", page, scrollValue);
                 setActiveList( prev => ({
                     ...prev,
                     ...position
                 }));
-                
+
                 if (page === 2)
                     doMagic();
                 apiProgress = false;
@@ -235,6 +239,8 @@ const Articles = () => {
 
     const handleScroll = event => {
         const scrollPercent = getScrollPercent();
+        // if (page === 1)
+        //     setPage(2);
         if (scrollPercent > 60 && apiProgress === false) {
            setPage( prev => prev + 1);
         }
@@ -300,9 +306,6 @@ const Articles = () => {
         : Object.keys(activeList).map( (id, key) => {
             if (activeList[id].hide)
                 return <></>;
-
-            if (lists[id] === undefined)
-                debugger;
             domHeight = activeList[id].style.top + configuration.height + 50;
 
             return <article className={`article ${viewType.toLowerCase()}`} key={key} id={id} style={activeList[id].style}>
@@ -323,7 +326,7 @@ const Articles = () => {
                 <div className="item-links">
                     <a className="content-block" href="">
                         <div>
-                            <h2 className="title">{lists[id].seq} {lists[id].title}</h2>
+                            <h2 className="title">{activeList[id].style.top}-{lists[id].title}</h2>
                         </div>
                         <div className="excerpt">
                             <p>{lists[id].excerpt}</p>
