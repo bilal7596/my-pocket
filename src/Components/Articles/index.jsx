@@ -65,14 +65,15 @@ const Articles = () => {
         if (page <= maxPage) {
             apiProgress = true;
             setTimeout(() => {
-                const { data, position, overAllHeight } = buildArticle(page);
+                const data = getArticlesApi(initCount, page);
+                const { position, overAllHeight } = buildArticle(data, page);
                 if (window.innerWidth < 599 && ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight)) {
                     const lastTop = document.querySelectorAll('article')[document.querySelectorAll('article').length - 1].style.top;
                     window.scrollTo(0, parseInt(lastTop));
                 }
                 setLists(prev => ({
                     ...prev,
-                    ...data
+                    ...toObject(data, 'id')
                 }));
                 console.log("pagination called", page, scrollValue);
                 setActiveList( prev => ({
@@ -249,32 +250,25 @@ const Articles = () => {
     };
 
     const handleResize = () => {
-        setPage( prev => {
-            let overAllPostition = {};
-            let overAllLists = {};
-            let finalOverAllHeight = 0;
-            for (let i=1; i<=prev; i++) {
-                const { data, position, overAllHeight } = buildArticle(i);
-                overAllLists = {
-                    ...overAllLists,
-                    ...data
-                }
-                overAllPostition = {
-                    ...overAllPostition,
+        setActiveList( prev => {
+            const data = Object.values(prev);
+            const keys = Object.keys(prev);
+            let newPosition = {};
+            for (let page=1; page<=Math.floor(data.length / initCount); page++) {
+                const { position } = buildArticle(data.slice(initCount*(page-1), initCount*page) , page);
+                console.log(position);
+                newPosition = {
+                    ...newPosition,
                     ...position
-                }
-                finalOverAllHeight = overAllHeight;
+                };
             }
-            setLists(overAllLists);
-            setActiveList(overAllPostition);
-            return prev;
+            return newPosition;
         })
     }
 
-    const buildArticle = (pageNumber) => {
+    const buildArticle = (data, pageNumber) => {
         
         const { splitup, height, width } = calculation();
-        const data = getArticlesApi(initCount, page);
         const position = {};
         let overAllHeight = 0;
         for (let i=0; i<data.length; i++) {
@@ -282,6 +276,7 @@ const Articles = () => {
             const row = parseInt(seq / splitup); // starts from 0
             const column = seq % splitup; // position from 0;
             position[data[i].id] = {
+                id: data[i].id,
                 style: {
                     top: (height * row) + (25 * row),
                     left: (width * column) + (25 * (column)),
@@ -293,7 +288,6 @@ const Articles = () => {
             overAllHeight = position[data[i].id].style.top + 300;
         }
         return {
-            data: toObject(data, 'id'),
             position,
             overAllHeight
         }
@@ -327,7 +321,8 @@ const Articles = () => {
                 <div className="item-links">
                     <a className="content-block" href="">
                         <div>
-                            <h2 className="title">{activeList[id].style.top}-{lists[id].title}</h2>
+                            <h2 className="title">{id}</h2>
+                            {/* <h2 className="title">{activeList[id].style.top}-{lists[id].title}</h2> */}
                         </div>
                         <div className="excerpt">
                             <p>{lists[id].excerpt}</p>
