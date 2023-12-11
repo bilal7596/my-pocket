@@ -12,8 +12,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { addArticles, articles } from "./articleSlice";
 
 const initCount = 30;
-const maxPage = 10;
+const maxPage = 5;
 let apiProgress = false;
+
+let hidedRecords = 0;
+let addedRecords = 0;
+
+let activeList = {};
 
 const Articles = () => {
 
@@ -23,11 +28,8 @@ const Articles = () => {
     const [page, setPage] = useState(1);
     const [viewType, setViewType] = useState(gridViewType);
     const [lists, setLists] = useState({});
-    const [activeList, setActiveList] = useState({});
     const [scrollValue, setScrollValue] = useState(window.scrollY);
     const [configuration, setConfiguration] = useState({});
-    const [hidedRecords, setHidedRecords] = useState(0);
-    const [addedRecords, setAddedRecords] = useState(0);
 
     const allArticles = useSelector(articles);
     const dispatch = useDispatch();
@@ -66,7 +68,7 @@ const Articles = () => {
             apiProgress = true;
             setTimeout(() => {
                 const data = getArticlesApi(initCount, page);
-                const { position, overAllHeight } = buildArticle(data, page);
+                buildArticle(data, page);
                 if (window.innerWidth < 599 && ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight)) {
                     const lastTop = document.querySelectorAll('article')[document.querySelectorAll('article').length - 1].style.top;
                     window.scrollTo(0, parseInt(lastTop));
@@ -75,70 +77,58 @@ const Articles = () => {
                     ...prev,
                     ...toObject(data, 'id')
                 }));
-                console.log("pagination called", page, scrollValue);
-                setActiveList( prev => ({
-                    ...prev,
-                    ...position
-                }));
+                doMagic();
+                doMagicForAdd();
+                doMagicForDelete();
 
-                // if (page === 2)
-                    // doMagic();
                 apiProgress = false;
             }, 1000);
         }
     }, [page]);
 
-    console.log("activeList", activeList);
-    console.log("lists", lists);
 
     useEffect(() => {
-    //    doMagic();
+       doMagic();
     }, [scrollValue]);
 
-    const doMagic = (fromPage = false) => {
-        // console.log("doMagic", hidedRecords, addedRecords, scrollDirection);
-        // if (fromPage)
-            // debugger;
+    const doMagic = () => {
         const topValue = window.scrollY - ((configuration.height * 2 ) + 100);
-        setActiveList( prev => {
-            const recordsKey = Object.keys(prev);
-            if (recordsKey.length <= 30)
-                return prev;
-
-            // console.log(scrollDirection);
-            if (scrollDirection === 'down') {
-                let cloneHidedRecords = hidedRecords;
-                const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
-                for (let i=0; i < recordsKey.length; i++) {
-                    if (viewRecords.length >= 30 && prev[recordsKey[i]].hide === false && prev[recordsKey[i]].style.top < topValue) {
-                        prev[recordsKey[i]] = {
-                            ...prev[recordsKey[i]],
-                            hide: true
-                        }
-                        cloneHidedRecords += 1;
-                    }
-                }
-                // console.log(hidedRecords);
-                setHidedRecords(cloneHidedRecords);
-            } else {
-                const firstViewableIndex = Object.values(prev).findIndex( a => a['hide'] === false );
-                let newAddedRecords = false;
-                let cloneAddedRecords = addedRecords;
-                for (let i=firstViewableIndex-1; i >= 0; i--) {
-                    if (prev[recordsKey[i]].hide === true && prev[recordsKey[i]].style.top > topValue) {
-                        newAddedRecords = true;
-                        prev[recordsKey[i]] = {
-                            ...prev[recordsKey[i]],
-                            hide: false
-                        }
-                        cloneAddedRecords += 1;
-                    }
-                }
-                setAddedRecords(cloneAddedRecords);
-            }
-            
+        const prev = activeList;
+        const recordsKey = Object.keys(prev);
+        if (recordsKey.length <= 30)
             return prev;
-        });
+
+        if (scrollDirection === 'down') {
+            let cloneHidedRecords = hidedRecords;
+            const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
+            for (let i=0; i < recordsKey.length; i++) {
+                if (viewRecords.length >= 30 && prev[recordsKey[i]].hide === false && prev[recordsKey[i]].style.top < topValue) {
+                    prev[recordsKey[i]] = {
+                        ...prev[recordsKey[i]],
+                        hide: true
+                    }
+                    cloneHidedRecords += 1;
+                }
+            }
+            hidedRecords = cloneHidedRecords;
+        } else {
+            const firstViewableIndex = Object.values(prev).findIndex( a => a['hide'] === false );
+            let newAddedRecords = false;
+            let cloneAddedRecords = addedRecords;
+            for (let i=firstViewableIndex-1; i >= 0; i--) {
+                if (prev[recordsKey[i]].hide === true && prev[recordsKey[i]].style.top > topValue) {
+                    newAddedRecords = true;
+                    prev[recordsKey[i]] = {
+                        ...prev[recordsKey[i]],
+                        hide: false
+                    }
+                    cloneAddedRecords += 1;
+                }
+            }
+            addedRecords = cloneAddedRecords;
+        }
+        
+        activeList = prev;
     }
 
     const doMagicForAdd = (hidedRec) => {
@@ -159,8 +149,8 @@ const Articles = () => {
                     }
                 }
             }
-            setActiveList(prev);
-            setHidedRecords(cloneHidedRecords);
+            activeList = prev;
+            hidedRecords = cloneHidedRecords;
         }
     }
 
@@ -170,7 +160,6 @@ const Articles = () => {
             const prev = activeList;
             const recordsKey = Object.keys(activeList);
             console.log("add and hide");
-            // const viewRecords = Object.values(prev).filter( a => a['hide'] === false );
             for (let i=0; i<cloneAddedRecords; i++) {
                 const lastViewItemKey = Object.keys(prev);
                 const lastViewableIndex = Object.values(prev).findLastIndex( a => a['hide'] === false );
@@ -186,17 +175,17 @@ const Articles = () => {
                     }
                 }
             }
-            setActiveList(prev);
-            setAddedRecords( cloneAddedRecords );
+            activeList = prev;
+            addedRecords = cloneAddedRecords
         }
     }
 
     useEffect(() => {
-        // doMagicForDelete();
+        doMagicForDelete();
     }, [activeList, addedRecords]);
 
     useEffect(() => {
-        // doMagicForAdd();
+        doMagicForAdd();
     }, [activeList, hidedRecords]);
 
     const calculation = () => {
@@ -241,33 +230,22 @@ const Articles = () => {
 
     const handleScroll = event => {
         const scrollPercent = getScrollPercent();
-        // if (page === 1)
-        //     setPage(2);
-        if (scrollPercent > 60 && apiProgress === false && page < maxPage) {
-           setPage( prev => prev + 1);
+        if (scrollPercent > 60 && apiProgress === false) {
+            const records = Object.values(activeList);
+            const viewingLastArticleIndex = records.findLastIndex( a => a.hide === false);
+            setPage( prev => (prev < maxPage && activeList[records[viewingLastArticleIndex].id].page === prev) ? prev + 1 : prev);
         }
         setScrollValue(window.scrollY);
     };
 
     const handleResize = () => {
-        setActiveList( prev => {
-            const data = Object.values(prev);
-            const keys = Object.keys(prev);
-            let newPosition = {};
-            for (let page=1; page<=Math.floor(data.length / initCount); page++) {
-                const { position } = buildArticle(data.slice(initCount*(page-1), initCount*page) , page);
-                console.log(position);
-                newPosition = {
-                    ...newPosition,
-                    ...position
-                };
-            }
-            return newPosition;
-        })
+        const prev = activeList;
+        const data = Object.values(prev);
+        for (let page=1; page<=Math.floor(data.length / initCount); page++)
+            buildArticle(data.slice(initCount*(page-1), initCount*page), page, true);
     }
 
-    const buildArticle = (data, pageNumber) => {
-        
+    const buildArticle = (data, pageNumber, fromResize) => {
         const { splitup, height, width } = calculation();
         const position = {};
         let overAllHeight = 0;
@@ -277,15 +255,31 @@ const Articles = () => {
             const column = seq % splitup; // position from 0;
             position[data[i].id] = {
                 id: data[i].id,
+                page: pageNumber,
                 style: {
                     top: (height * row) + (25 * row),
                     left: (width * column) + (25 * (column)),
                     width : splitup === 1 ? "100%" : width,
                     height: `${height}px`
                 },
-                hide: false
             }
+            if (!fromResize) {
+                position[data[i].id] = {
+                    ...position[data[i].id],
+                    hide: pageNumber === 1 ? false : true
+                }
+            } else {
+                position[data[i].id] = {
+                    ...position[data[i].id],
+                    hide: data[i].hide
+                }
+            }
+                
             overAllHeight = position[data[i].id].style.top + 300;
+        }
+        activeList = {
+            ...activeList,
+            ...position
         }
         return {
             position,
@@ -294,7 +288,6 @@ const Articles = () => {
     }
 
     let domHeight = 0;
-    
 
     return <div className="article-collections" ref={elementRef} >
         { Object.keys(activeList).length === 0 ? <div>Loading....</div>
@@ -321,8 +314,7 @@ const Articles = () => {
                 <div className="item-links">
                     <a className="content-block" href="">
                         <div>
-                            <h2 className="title">{id}</h2>
-                            {/* <h2 className="title">{activeList[id].style.top}-{lists[id].title}</h2> */}
+                            <h2 className="title">{page} {lists[id].title}</h2>
                         </div>
                         <div className="excerpt">
                             <p>{lists[id].excerpt}</p>
@@ -344,7 +336,6 @@ const Articles = () => {
                         <Popover>
                             <PopoverTrigger>
                                 <ButtonWithSvg buttonClassName={'light-icon'} svgName={overflow} />
-                                {elementRef?.current?.offsetWidth} { JSON.stringify(configuration) }
                             </PopoverTrigger>
                             <PopoverContent>
                             <PopoverDescription>
